@@ -19,11 +19,11 @@ public class BoardScreen extends ScreenAdapter {
     public BoardScreen(CardBaseGame game) {
         this.game = game;
         this.stage = new Stage(new ScreenViewport());
-        Image portada = new Image(this.game.portada);
-        portada.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        this.stage.addActor(portada);
+        Image background = new Image(this.game.background);
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this.stage.addActor(background);
         board = new CardBoard(this.game);
-        board.setAtlas("atlas.txt","discard.png");
+        board.setAtlas("atlas.txt", "discard.png");
         board.setDiscard("discard.png");
     }
 

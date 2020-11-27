@@ -7,15 +7,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class CardBaseGame extends Game {
-    SpriteBatch batch;
-    Texture portada;
+    public SpriteBatch batch;
+    Texture background;
     ShapeRenderer shapeRenderer;
     BitmapFont font;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        portada = new Texture("badlogic.jpg");
+        background = new Texture("badlogic.jpg");
 
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();

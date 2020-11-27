@@ -3,7 +3,6 @@ package com.fba.cardboard;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,9 +18,8 @@ public class CardBoard {
     private boolean dragging = false;
     Stage stage;
     TextureAtlas atlas;
-    private Rectangle discardBounds;
 
-    private Stack discard, stack, board;
+    private Stack discard, stack, board, onAir;
 
     private Card actualCard = null;
 
@@ -35,11 +33,12 @@ public class CardBoard {
     public void setAtlas(String filename, String base) {
         atlas = new TextureAtlas(filename);
         stack = new Stack(base, stage);
-        stack.setPosition(0,0);
-        board = new Stack(stage);//Para manejar el tablero completo
+        stack.setPosition(0, 0);
+        board = new Stack(stage);//For the whole board
+        onAir = new Stack(stage); // to manage the dragged cards
         int x = 0, y = 0;
 
-        //Inicializo el stack principal
+        //Initialize the card's deck
         for (TextureAtlas.AtlasRegion region : atlas.getRegions()) {
             final Actor actor = new Image(atlas.findRegion(region.name));
             Card card = new Card(this, actor, region.name);
@@ -51,7 +50,7 @@ public class CardBoard {
     }
 
     public void setDiscard(String filename) {
-        discard = new Stack(filename, stage);
+        discard = new Stack(filename, stage, true);
     }
 
     public void update() {
@@ -63,6 +62,7 @@ public class CardBoard {
                     if (actualCard != null) {
                         actualCard.update(pos);
                         dragging = true;
+                        onAir.addCard(actualCard);
                     }
                 }
                 if (!dragging) {
@@ -71,6 +71,7 @@ public class CardBoard {
                             board.dropCard(card);
                             actualCard = card;
                             card.update(pos);
+                            onAir.addCard(actualCard);
                             dragging = true;
                             break;
                         }
@@ -82,10 +83,17 @@ public class CardBoard {
         } else {
             dragging = false;
             if (actualCard != null) {
-                actualCard.drop();
-                board.addCard(actualCard);
-                stack.dropCard(actualCard);
-
+                //Verify if touch the discard stack
+                if (discard.touchStack(actualCard.getBounds())) {
+                    board.dropCard(actualCard);
+                    discard.addCard(actualCard);
+                } else {
+                    //Then drop the card in the board
+                    actualCard.drop();
+                    onAir.dropCard(actualCard);
+                    board.addCard(actualCard);
+                    stack.dropCard(actualCard);
+                }
             }
             actualCard = null;
         }

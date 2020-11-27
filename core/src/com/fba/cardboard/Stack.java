@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import java.util.ArrayList;
@@ -16,15 +15,16 @@ import java.util.Collections;
 
 public class Stack {
 
-    private HorizontalGroup group;
+    private Group group;
     private Rectangle bounds;
     private Image baseImage;
-    private ArrayList stack;
+    private ArrayList<Card> stack;
     private Actor actor;
-    private boolean temporal=true;
     private Stage stage;
+    private boolean endStack = false;
 
-    public Stack(Stage stage){
+    //TODO:Change to Build Pattern to use different parameters and values
+    public Stack(Stage stage) {
         baseImage = null;
         stack = new ArrayList<Card>();
         bounds = new Rectangle(
@@ -32,13 +32,17 @@ public class Stack {
                 0,
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
-        group=new HorizontalGroup();
-        this.stage=stage;
+        group = new Group();
+        this.stage = stage;
         this.stage.addActor(group);
     }
 
-    public Stack(String filename, Stage stage){
-        this.stage=stage;
+    public Stack(String filename, Stage stage) {
+        this(filename, stage, false);
+    }
+
+    public Stack(String filename, Stage stage, boolean endStack) {
+        this.stage = stage;
         baseImage = new Image(new Texture(filename));
         stack = new ArrayList<Card>();
         actor = baseImage;
@@ -48,14 +52,15 @@ public class Stack {
                 actor.getY(),
                 actor.getWidth(),
                 actor.getHeight());
-        //Este es el fondo del stack
+        //Bottom image of the stack
         this.stage.addActor(actor);
-        group=new HorizontalGroup();
+        group = new Group();
         this.stage.addActor(group);
+        this.endStack = endStack;
     }
 
-    public void setPosition(float x,float y){
-        actor.setPosition(x,y);
+    public void setPosition(float x, float y) {
+        actor.setPosition(x, y);
         bounds = new Rectangle(
                 actor.getX(),
                 actor.getY(),
@@ -63,68 +68,62 @@ public class Stack {
                 actor.getHeight());
     }
 
-    public void addCard(Card card){
-        if(!stack.contains(card)) {
-            card.setZIndex(Constants.getInstance().getZ());
-
-
+    public void addCard(Card card) {
+        if (!stack.contains(card)) {
+            if (endStack) {
+                card.actor.setPosition(actor.getX(), actor.getY());
+            }
+            stage.addActor(card.actor);
             group.addActor(card);
 
             stack.add(card);
-        }
-        else{
-            System.out.println("La carta ya estaba aqui");
+        } else {
+            System.out.println("The card was here");
             group.findActor(card.getName()).toFront();
 
         }
     }
 
-    public void dropCard(Card card){
-        if(stack.contains(card)) {
+    public void dropCard(Card card) {
+        if (stack.contains(card)) {
             stack.remove(card);
-            group.removeActor(card);
-            //group.toFront();
+            card.actor.remove();
             sortStack();
-            System.out.println("Cartas en este deck Soltando:");
+            System.out.println("Cards in this deck dropping:");
             for (int i = 0; i < group.getChildren().size; i++) {
-                System.out.println(group.getChildren().get(i).getName() +" "+group.getChildren().get(i).getZIndex());
+                System.out.println(group.getChildren().get(i).getName() + " " + group.getChildren().get(i).getZIndex());
             }
         }
     }
 
-    public void reverseStack(){
+    public void reverseStack() {
         Collections.reverse(stack);
     }
 
-    public void sortStack(){
-
-        //Collections.sort(Arrays.asList(stage.getActors().toArray()), new CardComparator());
+    public void sortStack() {
         Collections.sort(Arrays.asList(group.getChildren().toArray()), new CardComparator());
-        //Collections.reverse(stack);
     }
 
-    public ArrayList<Card> getCards(){
-        return stack;
+    public ArrayList<Card> getCards() {
+        //TODO:Try to fix this
+        ArrayList<Card> temp = new ArrayList<Card>(stack);
+        Collections.reverse(temp);
+        return temp;
     }
 
-    public Card pickTop(){
-        if(stack.size()>0)
-            return (Card)stack.remove(0);
+    public Card pickTop() {
+        if (!stack.isEmpty()) {
+            stack.get(0).actor.remove();
+            return stack.remove(0);
+        }
         return null;
-        //return (Card)stack.get(0);
     }
 
-    public boolean touchStack(Vector2 pos){
-        /*
-        System.out.println(pos);
-        System.out.println(bounds);
-        System.out.println(bounds.contains(pos));*/
+    public boolean touchStack(Vector2 pos) {
         return bounds.contains(pos);
     }
 
-    public void setTemporal(boolean temp){
-        this.temporal=temp;
+    public boolean touchStack(Rectangle pos) {
+        return bounds.overlaps(pos);
     }
-
-    public boolean isTemporal(){return temporal;}
 }

@@ -45,6 +45,10 @@ public class Card extends Actor implements Comparable<Card> {
         return bounds.contains(pos);
     }
 
+    public Rectangle getBounds(){
+        return bounds;
+    }
+
     @Override
     public int compareTo(Card o) {
         if (this.getZIndex() < o.getZIndex()) {
