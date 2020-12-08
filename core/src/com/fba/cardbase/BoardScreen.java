@@ -9,12 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.fba.cardboard.CardBoard;
+import com.fba.cardboard.Stack;
 
 public class BoardScreen extends ScreenAdapter {
 
     CardBaseGame game;
     public Stage stage;
     CardBoard board;
+    Stack source, discard;
 
     public BoardScreen(CardBaseGame game) {
         this.game = game;
@@ -23,8 +25,10 @@ public class BoardScreen extends ScreenAdapter {
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.stage.addActor(background);
         board = new CardBoard(this.game);
-        board.setAtlas("atlas.txt", "discard.png");
-        board.setDiscard("discard.png");
+        source = board.setAtlas("atlas.txt", "discard.png");
+
+        discard = board.setDiscard("discard.png");
+        discard.setWaterfall(true);
     }
 
     @Override

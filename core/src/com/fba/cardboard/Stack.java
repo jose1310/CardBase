@@ -23,6 +23,11 @@ public class Stack {
     private Stage stage;
     private boolean endStack = false;
 
+    //This fields will manage when a Stack store the cards like a dropdown
+    private boolean waterfall = false;
+    private Vector2 waterfallEnd;
+    private int waterfallStep=20;
+
     //TODO:Change to Build Pattern to use different parameters and values
     public Stack(Stage stage) {
         baseImage = null;
@@ -34,6 +39,7 @@ public class Stack {
                 Gdx.graphics.getHeight());
         group = new Group();
         this.stage = stage;
+        actor = new Actor();
         this.stage.addActor(group);
     }
 
@@ -73,6 +79,13 @@ public class Stack {
             if (endStack) {
                 card.actor.setPosition(actor.getX(), actor.getY());
             }
+            if(waterfall){
+                if(waterfallEnd==null){
+                    waterfallEnd=new Vector2(actor.getX(),actor.getY());
+                }
+                waterfallEnd.y-=waterfallStep;
+                card.actor.setPosition(waterfallEnd.x,waterfallEnd.y);
+            }
             stage.addActor(card.actor);
             group.addActor(card);
 
@@ -88,6 +101,12 @@ public class Stack {
         if (stack.contains(card)) {
             stack.remove(card);
             card.actor.remove();
+            if(waterfall){
+                if(waterfallEnd==null){
+                    waterfallEnd=new Vector2(actor.getX(),actor.getY());
+                }
+                if(waterfallEnd.y>actor.getY()) waterfallEnd.y+=waterfallStep;
+            }
             sortStack();
             System.out.println("Cards in this deck dropping:");
             for (int i = 0; i < group.getChildren().size; i++) {
@@ -125,5 +144,9 @@ public class Stack {
 
     public boolean touchStack(Rectangle pos) {
         return bounds.overlaps(pos);
+    }
+
+    public void setWaterfall(boolean waterfall){
+        this.waterfall=waterfall;
     }
 }

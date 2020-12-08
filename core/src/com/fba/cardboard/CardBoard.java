@@ -30,7 +30,7 @@ public class CardBoard {
         this.atlas = new TextureAtlas();
     }
 
-    public void setAtlas(String filename, String base) {
+    public Stack setAtlas(String filename, String base) {
         atlas = new TextureAtlas(filename);
         stack = new Stack(base, stage);
         stack.setPosition(0, 0);
@@ -47,10 +47,12 @@ public class CardBoard {
             stage.addActor(card.actor);
         }
         stack.reverseStack();
+        return board;
     }
 
-    public void setDiscard(String filename) {
+    public Stack setDiscard(String filename) {
         discard = new Stack(filename, stage, true);
+        return discard;
     }
 
     public void update() {

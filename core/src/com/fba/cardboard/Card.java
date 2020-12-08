@@ -4,9 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
 
-import java.util.Comparator;
-
-public class Card extends Actor implements Comparable<Card> {
+public class Card extends Actor implements Comparable<Card>{
     final Actor actor;
     private Rectangle bounds;
     private CardBoard parent;
