@@ -41,6 +41,7 @@ public class Stack {
         this.stage = stage;
         actor = new Actor();
         this.stage.addActor(group);
+        setPosition(0,0);
     }
 
     public Stack(String filename, Stage stage) {
@@ -78,6 +79,7 @@ public class Stack {
         if (!stack.contains(card)) {
             if (endStack) {
                 card.actor.setPosition(actor.getX(), actor.getY());
+                card.update(actor.getX(), actor.getY());
             }
             if(waterfall){
                 if(waterfallEnd==null){
@@ -85,6 +87,7 @@ public class Stack {
                 }
                 waterfallEnd.y-=waterfallStep;
                 card.actor.setPosition(waterfallEnd.x,waterfallEnd.y);
+                card.updateBounds();
             }
             stage.addActor(card.actor);
             group.addActor(card);
@@ -108,10 +111,6 @@ public class Stack {
                 if(waterfallEnd.y>actor.getY()) waterfallEnd.y+=waterfallStep;
             }
             sortStack();
-            System.out.println("Cards in this deck dropping:");
-            for (int i = 0; i < group.getChildren().size; i++) {
-                System.out.println(group.getChildren().get(i).getName() + " " + group.getChildren().get(i).getZIndex());
-            }
         }
     }
 

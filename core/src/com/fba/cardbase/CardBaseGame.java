@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class CardBaseGame extends Game {
-    public SpriteBatch batch;
+    SpriteBatch batch;
     Texture background;
     ShapeRenderer shapeRenderer;
     BitmapFont font;

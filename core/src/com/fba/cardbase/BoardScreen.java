@@ -1,9 +1,6 @@
 package com.fba.cardbase;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -14,25 +11,38 @@ import com.fba.cardboard.Stack;
 public class BoardScreen extends ScreenAdapter {
 
     CardBaseGame game;
-    public Stage stage;
+    Stage stage;
     CardBoard board;
-    Stack source, discard;
+    Stack source;
+    Stack discard;
+    Stack temp;
+    InputMultiplexer multiplexer;
 
     public BoardScreen(CardBaseGame game) {
         this.game = game;
         this.stage = new Stage(new ScreenViewport());
+
+        multiplexer = new InputMultiplexer();
+        Gdx.input.setInputProcessor(multiplexer);
+
         Image background = new Image(this.game.background);
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.stage.addActor(background);
-        board = new CardBoard(this.game);
+        board = new CardBoard(this.game,multiplexer);
         source = board.setAtlas("atlas.txt", "discard.png");
+        board.setOnAir();
 
         discard = board.setDiscard("discard.png");
         discard.setWaterfall(true);
+
+        temp = board.setDiscard("discard.png");
+        temp.setWaterfall(true);
+        temp.setPosition(200,200);
     }
 
     @Override
     public void show() {
+        /*
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean keyDown(int keyCode) {
@@ -43,7 +53,8 @@ public class BoardScreen extends ScreenAdapter {
                 }
                 return true;
             }
-        });
+        });*/
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
 
@@ -63,8 +74,9 @@ public class BoardScreen extends ScreenAdapter {
 
         game.batch.end();
 
-        board.update();
         board.draw();
+        board.update();
+
 
     }
 }

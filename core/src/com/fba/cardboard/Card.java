@@ -1,5 +1,7 @@
 package com.fba.cardboard;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -11,11 +13,23 @@ public class Card extends Actor implements Comparable<Card>{
     private float offsetX=0;
     private float offsetY=0;
 
-    public Card(CardBoard parent, final Actor actor, String name){
+    public Card(CardBoard parent, final Actor actor, final String name){
         this.parent = parent;
         this.actor=actor;
         this.setName(name);
         bounds = new Rectangle(0, 0, actor.getWidth(), actor.getHeight());
+        setTouchable(Touchable.enabled);
+        parent.multiplexer.addProcessor(new InputAdapter(){
+
+            @Override
+            public boolean touchDown(int x, int y, int pointer, int button) {
+                if(contains(new Vector2(x,(float)Gdx.graphics.getHeight()-y))) {
+                    Gdx.app.log("LOG", "TAPPED " + name);
+                    return super.touchDown(x, y, pointer, button);
+                }
+                return false;
+            }
+        });
     }
 
     public void update(float x,float y){
@@ -29,7 +43,7 @@ public class Card extends Actor implements Comparable<Card>{
         actor.setX(pos.x-offsetX);
         actor.setY(pos.y-offsetY);
 
-        bounds = new Rectangle(actor.getX(), actor.getY(), actor.getWidth(), actor.getHeight());
+        updateBounds();
     }
 
     public void drop(){
@@ -45,6 +59,10 @@ public class Card extends Actor implements Comparable<Card>{
 
     public Rectangle getBounds(){
         return bounds;
+    }
+
+    public void updateBounds(){
+        bounds = new Rectangle(actor.getX(), actor.getY(), actor.getWidth(), actor.getHeight());
     }
 
     @Override
